@@ -1,0 +1,130 @@
+html {
+    font-size: 14px;
+    font-family: "Open Sans", sans-serif;
+    background-color: rgb(253, 253, 231);
+}
+
+h1 {
+    margin: 0;
+    font-size: 60px;
+    text-align: center;
+    vertical-align: baseline;
+    color: darkgreen;
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+    padding-bottom: 10px;
+    padding-right: 40px;
+}
+
+h2 {
+    margin: 0;
+    font-size: 24px;
+    text-align: left;
+    vertical-align: text-bottom;
+    color: darkgreen;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+    padding-bottom: 10px;
+}
+
+p,
+li,
+ul {
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: 1px;
+}
+
+body {
+    position: relative;
+    padding: 0 20px 20px 20px;
+}
+
+.logo {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 140px;
+    padding-right: 80px;
+    padding-bottom: 20px;
+}
+
+.musical-staff {
+    background-color: #ffffff; 
+    /* Ensure it covers the bottom half by making it at least 50% of the viewport height */
+    min-height: 17vh; 
+    max-width: 500px;
+    bottom: auto;
+    position: relative;
+    border: 2px solid darkgreen;
+}
+
+.styled-button {
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    padding: 15px 32px; /* Top and bottom padding, left and right padding */
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px; /* Rounded corners */
+    transition-duration: 0.4s; /* Smooth transition for hover effect */
+}
+
+.styled-button-small {
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    padding: 15px 32px; /* Top and bottom padding, left and right padding */
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px; /* Rounded corners */
+    transition-duration: 0.4s; /* Smooth transition for hover effect */
+}
+
+.styled-button:hover {
+    background-color: #45a049; /* Darker shade of green */
+}
+
+.button-row, .input-row {
+    display: flex;
+    justify-content: left; /* Distribute space between items */
+    margin-bottom: 10px; /* Add some space below each row */
+}
+
+.input-row > p {
+    display: flex;
+    align-items: center;
+    justify-content: left; /* Space between label and input */
+    margin-right: 20px; /* Space between input groups */
+}
+
+.input-row input[type="number"] {
+    width: 44px; /* Or any other value */
+}
+
+.banner {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    margin-right: 30px;
+}
+
+.small-note-icon {
+    width: 20px; /* Set the width as desired */
+    height: 30px; /* Set the height as desired */
+    /* Use object-fit if you want to maintain the aspect ratio */
+    object-fit: contain;
+}
+
+.note-name {
+    font-size: 20px; /* Adjust the size as needed */
+    margin-right: 5px; /* Add some space between the icon and the text */
+    /* raise the note up a little */
+    position: relative;
+}

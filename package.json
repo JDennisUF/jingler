@@ -1,0 +1,15 @@
+{
+  "name": "css",
+  "version": "1.0.0",
+  "description": "Jingler",
+  "main": "jingleGenerator.js",
+  "scripts": {
+    "start": "node jingleGenerator.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jason Dennis",
+  "license": "ISC",
+  "dependencies": {
+    "vexflow": "^4.2.4"
+  }
+}
