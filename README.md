@@ -5,6 +5,7 @@ There are a few options:
 2. Tempo (beats/minute)
 3. Max # Notes
 4. Time signature is common time, 4/4
+5. Option to include 32nd notes
 
 You can Play or Delete any jingles you create.
 
