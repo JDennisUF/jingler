@@ -176,8 +176,9 @@ document.getElementById('include32ndNotes').addEventListener('change', function 
             noteDurations.splice(index, 1);
         }
     }
-    // Update your application logic to reflect the change
 });
+
+//#region Functions
 function generateJingle() {
 
     getRandomNotes();
