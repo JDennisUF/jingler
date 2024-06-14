@@ -1,11 +1,12 @@
 Jingler is an automatic jingle writer you can use to generate random, single measure jingles with.
 
-There are a few options:
-1. Scale
+These are the options:
+1. Scale select
 2. Tempo (beats/minute)
 3. Max # Notes
 4. Time signature is common time, 4/4
 5. Option to include 32nd notes
+6. Export to PNG
 
 You can Play or Delete any jingles you create.
 
