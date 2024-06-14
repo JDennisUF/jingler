@@ -51,7 +51,7 @@ body {
     background-color: #ffffff; 
     /* Ensure it covers the bottom half by making it at least 50% of the viewport height */
     min-height: 17vh; 
-    max-width: 500px;
+    max-width: 600px;
     bottom: auto;
     position: relative;
     border: 2px solid darkgreen;

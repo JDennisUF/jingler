@@ -68,7 +68,7 @@ const restDurations = {
 };
 
 const ticksPerQuarterNote = 192;
-const noteDurations = ["2", "4", "8", "16"]; // Possible note durations, omitting whole notes and 32nd notes for simplicity
+const noteDurations = ["2", "4", "8", "16"]; // Possible note durations, omitting whole notes (32nd notes are optional)
 
 let selectedScale = scales[0];
 let currentJingle = [];
@@ -103,7 +103,7 @@ document.getElementById('export-music-staff').addEventListener('click', function
     const ctx = canvas.getContext('2d');
     const img = new Image();
 
-    canvas.width = 500;
+    canvas.width = 600;
     canvas.height = 140;
 
     img.onload = function () {
@@ -123,7 +123,19 @@ document.getElementById('export-music-staff').addEventListener('click', function
     // tell the user where the file was saved
     alert('The music staff image has been saved to your downloads folder.');
 });
-
+document.getElementById('include32ndNotes').addEventListener('change', function() {
+  if (this.checked) {
+    // Logic to include 32nd notes
+    noteDurations.push('32'); // Assuming '32n' represents 32nd notes
+  } else {
+    // Logic to exclude 32nd notes
+    var index = noteDurations.indexOf('32');
+    if (index > -1) {
+      noteDurations.splice(index, 1);
+    }
+  }
+  // Update your application logic to reflect the change
+});
 function generateJingle() {
 
     getRandomNotes();
