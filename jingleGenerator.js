@@ -6,10 +6,22 @@ const scales = [
         octaves: [4, 4, 4, 4, 4, 4, 4]
     },
     {
+        name: "C Minor",
+        notenames: ['C', 'D', 'Eb', 'F', 'G', 'Ab', 'Bb'],
+        notes: [261.63, 293.66, 311.13, 349.23, 392.00, 415.30, 466.16],
+        octaves: [4, 4, 4, 4, 4, 4, 4]
+    },
+    {
         name: "G Major",
         notenames: ['G', 'A', 'B', 'C', 'D', 'E', 'F#'],
         notes: [196.00, 220.00, 246.94, 261.63, 293.66, 329.63, 392.00],
         octaves: [3, 3, 3, 4, 4, 4, 4]
+    },
+    {
+        name: "G Minor",
+        notenames: ['G', 'A', 'Bb', 'C', 'D', 'Eb', 'F'],
+        notes: [392.00, 440.00, 466.16, 523.25, 587.33, 622.25, 349.23],
+        octaves: [4, 4, 4, 5, 5, 5, 4]
     },
     {
         name: "D Major",
@@ -18,10 +30,22 @@ const scales = [
         octaves: [4, 4, 4, 4, 4, 4, 5]
     },
     {
+        name: "D Minor",
+        notenames: ['D', 'E', 'F', 'G', 'A', 'Bb', 'C'],
+        notes: [293.66, 329.63, 349.23, 392.00, 440.00, 466.16, 261.63],
+        octaves: [4, 4, 4, 4, 4, 4, 4]
+    },
+    {
         name: "A Major",
         notenames: ['A', 'B', 'C#', 'D', 'E', 'F#', 'G#'],
         notes: [220.00, 246.94, 277.18, 293.66, 329.63, 369.99, 415.30],
         octaves: [4, 4, 5, 5, 5, 5, 5]
+    },
+    {
+        name: "A Minor",
+        notenames: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
+        notes: [440.00, 493.88, 523.25, 587.33, 659.25, 698.46, 783.99],
+        octaves: [4, 4, 4, 4, 4, 4, 4]
     },
     {
         name: "E Major",
@@ -30,9 +54,21 @@ const scales = [
         octaves: [4, 4, 4, 4, 4, 5, 5]
     },
     {
+        name: "E Minor",
+        notenames: ['E', 'F#', 'G', 'A', 'B', 'C', 'D'],
+        notes: [329.63, 369.99, 392.00, 440.00, 493.88, 261.63, 293.66],
+        octaves: [4, 4, 4, 4, 4, 4, 4]
+    },
+    {
         name: "B Major",
         notenames: ['B', 'C#', 'D#', 'E', 'F#', 'G#', 'A#'],
         notes: [493.88, 554.37, 622.25, 659.25, 739.99, 830.61, 932.33],
+        octaves: [3, 4, 4, 4, 4, 4, 4]
+    },
+    {
+        name: "B Minor",
+        notenames: ['B', 'C#', 'D', 'E', 'F#', 'G', 'A'],
+        notes: [246.94, 277.18, 293.66, 329.63, 369.99, 392.00, 440.00],
         octaves: [3, 4, 4, 4, 4, 4, 4]
     },
     {
@@ -45,6 +81,12 @@ const scales = [
         name: "F Major",
         notenames: ['F', 'G', 'A', 'A#', 'C', 'D', 'E'],
         notes: [349.23, 392.00, 440.00, 466.16, 523.25, 587.33, 659.25],
+        octaves: [4, 4, 4, 4, 5, 5, 5]
+    },
+    {
+        name: "F Minor",
+        notenames: ['F', 'G', 'Ab', 'Bb', 'C', 'Db', 'Eb'],
+        notes: [349.23, 392.00, 415.30, 466.16, 523.25, 554.37, 622.25],
         octaves: [4, 4, 4, 4, 5, 5, 5]
     }
 ];
@@ -109,7 +151,7 @@ document.getElementById('export-music-staff').addEventListener('click', function
     img.onload = function () {
         ctx.drawImage(img, 0, 0);
         const a = document.createElement('a');
-        
+
         // name the file music-staff + the current date and time to avoid overwriting files
         const now = new Date();
         const timestamp = now.toISOString().replace(/[:\-]|\.\d{3}/g, '');
@@ -123,18 +165,18 @@ document.getElementById('export-music-staff').addEventListener('click', function
     // tell the user where the file was saved
     alert('The music staff image has been saved to your downloads folder.');
 });
-document.getElementById('include32ndNotes').addEventListener('change', function() {
-  if (this.checked) {
-    // Logic to include 32nd notes
-    noteDurations.push('32'); // Assuming '32n' represents 32nd notes
-  } else {
-    // Logic to exclude 32nd notes
-    var index = noteDurations.indexOf('32');
-    if (index > -1) {
-      noteDurations.splice(index, 1);
+document.getElementById('include32ndNotes').addEventListener('change', function () {
+    if (this.checked) {
+        // Logic to include 32nd notes
+        noteDurations.push('32'); // Assuming '32n' represents 32nd notes
+    } else {
+        // Logic to exclude 32nd notes
+        var index = noteDurations.indexOf('32');
+        if (index > -1) {
+            noteDurations.splice(index, 1);
+        }
     }
-  }
-  // Update your application logic to reflect the change
+    // Update your application logic to reflect the change
 });
 function generateJingle() {
 
@@ -243,7 +285,7 @@ function getRandomNotes() {
         let noteName = selectedScale.notenames[notes.indexOf(note)];
         // if this is the second note and the measure is already complete
         // skip to the next note instead.  This avoids two half notes in one measure (boring)
-        if (numNotes === 1 && 
+        if (numNotes === 1 &&
             ticksInCurrentJingle + Tone.Time(noteDuration).toTicks() >= totalTicksPerMeasure) {
             continue;
         }
@@ -270,7 +312,7 @@ function getRandomNotes() {
                         noteName: noteName,
                         resting: true,
                         scale: selectedScale
-                        });
+                    });
                     ticksInCurrentJingle += Tone.Time(restDuration).toTicks();
                 });
             }

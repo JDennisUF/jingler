@@ -7,12 +7,11 @@ html {
 h1 {
     margin: 0;
     font-size: 60px;
-    text-align: center;
+    text-align: left;
     vertical-align: baseline;
     color: darkgreen;
     text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
     padding-bottom: 10px;
-    padding-right: 40px;
 }
 
 h2 {
@@ -39,12 +38,12 @@ body {
 }
 
 .logo {
-    position: relative;
-    top: 0;
+    position: absolute;
+    top: 5;
     left: 0;
     width: 140px;
-    padding-right: 80px;
-    padding-bottom: 20px;
+    padding-right: 30px;
+    padding-bottom: 30px;
 }
 
 .musical-staff {
@@ -110,8 +109,9 @@ body {
 
 .banner {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: left;
+    justify-content: normal;
     margin-right: 30px;
 }
 
