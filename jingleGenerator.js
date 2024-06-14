@@ -96,6 +96,33 @@ document.getElementById('timeSignature').addEventListener('input', function () {
     timeSignatureNoteValue = parseInt(this.value.split('/')[1]);
     totalTicksPerMeasure = ticksPerQuarterNote * timeSignatureNotesPerMeasure;
 });
+document.getElementById('export-music-staff').addEventListener('click', function () {
+    const svg = document.getElementById('musicalstaff').getElementsByTagName('svg')[0];
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+
+    canvas.width = 500;
+    canvas.height = 140;
+
+    img.onload = function () {
+        ctx.drawImage(img, 0, 0);
+        const a = document.createElement('a');
+        
+        // name the file music-staff + the current date and time to avoid overwriting files
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/[:\-]|\.\d{3}/g, '');
+        a.download = `music-staff-${timestamp}.png`;
+
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+    };
+
+    img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+    // tell the user where the file was saved
+    alert('The music staff image has been saved to your downloads folder.');
+});
 
 function generateJingle() {
 
