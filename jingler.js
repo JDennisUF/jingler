@@ -90,6 +90,150 @@ const scales = [
         octaves: [4, 4, 4, 4, 5, 5, 5]
     }
 ];
+
+const allNotes = [
+    {
+        "notename": "G",
+        "note": 196,
+        "octave": 3
+    },
+    {
+        "notename": "A",
+        "note": 220,
+        "octave": 3
+    },
+    {
+        "notename": "B",
+        "note": 246.94,
+        "octave": 3
+    },
+    {
+        "notename": "C",
+        "note": 261.63,
+        "octave": 4
+    },
+    {
+        "notename": "D",
+        "note": 293.66,
+        "octave": 4
+    },
+    {
+        "notename": "Eb",
+        "note": 311.13,
+        "octave": 4
+    },
+    {
+        "notename": "E",
+        "note": 329.63,
+        "octave": 4
+    },
+    {
+        "notename": "F",
+        "note": 349.23,
+        "octave": 4
+    },
+    {
+        "notename": "G",
+        "note": 392,
+        "octave": 4
+    },
+    {
+        "notename": "F#",
+        "note": 392,
+        "octave": 4
+    },
+    {
+        "notename": "Ab",
+        "note": 415.3,
+        "octave": 4
+    },
+    {
+        "notename": "G#",
+        "note": 415.3,
+        "octave": 4
+    },
+    {
+        "notename": "A",
+        "note": 440,
+        "octave": 4
+    },
+    {
+        "notename": "Bb",
+        "note": 466.16,
+        "octave": 4
+    },
+    {
+        "notename": "B",
+        "note": 493.88,
+        "octave": 4
+    },
+    {
+        "notename": "C#",
+        "note": 554.37,
+        "octave": 5
+    },
+    {
+        "notename": "D#",
+        "note": 622.25,
+        "octave": 5
+    },
+    {
+        "notename": "A#",
+        "note": 932.33,
+        "octave": 5
+    },
+    {
+        "notename": "C#",
+        "note": 293.66,
+        "octave": 4
+    },
+    {
+        "notename": "E",
+        "note": 329.63,
+        "octave": 4
+    },
+    {
+        "notename": "F#",
+        "note": 369.99,
+        "octave": 4
+    },
+    {
+        "notename": "G#",
+        "note": 415.3,
+        "octave": 4
+    },
+    {
+        "notename": "C",
+        "note": 523.25,
+        "octave": 5
+    },
+    {
+        "notename": "Db",
+        "note": 554.37,
+        "octave": 5
+    },
+    {
+        "notename": "D",
+        "note": 587.33,
+        "octave": 5
+    },
+    {
+        "notename": "Eb",
+        "note": 622.25,
+        "octave": 5
+    },
+    {
+        "notename": "D#",
+        "note": 622.25,
+        "octave": 5
+    },
+    {
+        "notename": "F",
+        "note": 698.46,
+        "octave": 5
+    }
+];
+
 const durationMap = {
     "n": 'w',    // 768t Whole note
     "2n": 'h',   // 384t Half note
@@ -376,6 +520,7 @@ function convertNoteToVexFlowFormat(noteValue, frequency, duration, resting, sca
     let octave = scale.octaves[scale.notes.indexOf(frequency)];
 
     vexFlowNote = `${noteValue}${octave}/${vexFlowDuration}` + (resting ? '/r' : '');
+
     // Combine note value, octave, and duration into VexFlow format
     return vexFlowNote;
 }
@@ -418,3 +563,37 @@ function getMiddleNoteName(scale) {
 
     return middleNoteName;
 }
+
+// use this to generate all the notes from the scales
+// whenever the scales are updated
+// manually copy them from the console to the allNotes array
+function exportAllNotesFromScales() {
+    let allNotes = [];
+
+    scales.forEach(scale => {
+        scale.notenames.forEach((noteName, index) => {
+            const note = {
+                notename: noteName,
+                note: scale.notes[index],
+                octave: scale.octaves[index]
+            };
+            // Check if the note already exists in allNotes
+            const noteExists = allNotes.some(existingNote =>
+                existingNote.notename === note.notename && existingNote.octave === note.octave
+            );
+            if (!noteExists) {
+                allNotes.push(note);
+            }
+        });
+    });
+
+    // Optional: Sort allNotes if needed, for example, by octave then by note frequency
+    allNotes.sort((a, b) => {
+        if (a.octave === b.octave) {
+            return a.note - b.note;
+        }
+        return a.octave - b.octave;
+    });
+
+    console.log(allNotes);
+}   
