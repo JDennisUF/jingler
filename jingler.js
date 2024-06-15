@@ -325,7 +325,7 @@ document.getElementById('include32ndNotes').addEventListener('change', function 
 //#region Functions
 function generateJingle() {
 
-    getRandomNotes();
+    createJingle();
     savedJingles.push([...currentJingle]);
     displaySavedJingles();
     drawMusicalStaff(currentJingle);
@@ -395,11 +395,31 @@ function displaySavedJingles() {
         // add jingle    
         const notesContainer = document.createElement('span');
         jingle.filter(note => !note.resting).forEach(note => {
-            // display the notename before the image
-            const noteNameSpan = document.createElement('span');
-            noteNameSpan.textContent = ` ${note.noteName}`;
-            noteNameSpan.className = 'note-name';
-            notesContainer.appendChild(noteNameSpan);
+            // Create a select element
+            const noteSelect = document.createElement('select');
+            noteSelect.className = 'note-select';
+            let currentScale = scales.find(scale => scale.name === note.scale.name);
+
+            noteSelect.onchange = function () {
+                note.noteName = this.value;
+                note.note = currentScale.notes[currentScale.notenames.indexOf(note.noteName)];
+                drawMusicalStaff(jingle);
+            };
+
+            // Populate the select element with options from selectedScale
+            currentScale.notenames.forEach(notenames => {
+                const option = document.createElement('option');
+                option.value = notenames;
+                option.textContent = notenames;
+                // Set the current note as selected
+                if (notenames === note.noteName) {
+                    option.selected = true;
+                }
+                noteSelect.appendChild(option);
+            });
+
+            // Append the select element to the notesContainer
+            notesContainer.appendChild(noteSelect);
 
             // add the image for the note duration 
             const noteIcon = document.createElement('img');
@@ -413,7 +433,7 @@ function displaySavedJingles() {
     });
 }
 
-function getRandomNotes() {
+function createJingle() {
     const notes = selectedScale ? selectedScale.notes : [];
     let noteDuration = '';
     let ticksInCurrentJingle = 0;
@@ -421,9 +441,9 @@ function getRandomNotes() {
     let numNotes = 0;
     let resting = false;
 
-    // get the amount of ticks left in the current measure
     currentJingle = [];
-
+    
+    // get the amount of ticks left in the current measure
     while (ticksInCurrentJingle < totalTicksPerMeasure) {
         noteDuration = noteDurations[Math.floor(Math.random() * noteDurations.length)] + 'n';
         let note = notes[Math.floor(Math.random() * notes.length)];

@@ -24,12 +24,20 @@ h2 {
     padding-bottom: 10px;
 }
 
+li {
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: 1px;
+    padding: 5px, 5px, 5px, 5px;
+    list-style-type: none;
+}
+
 p,
-li,
 ul {
     font-size: 14px;
     line-height: 1;
     letter-spacing: 1px;
+    padding: 0px;
 }
 
 body {
@@ -74,12 +82,12 @@ body {
 .styled-button-small {
     background-color: #4CAF50; /* Green background */
     color: white; /* White text */
-    padding: 15px 32px; /* Top and bottom padding, left and right padding */
+    padding: 10px 10px; /* Top and bottom padding, left and right padding */
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 12px;
-    margin: 4px 2px;
+    margin: 4px 5px 10px 10px;
     cursor: pointer;
     border: none;
     border-radius: 8px; /* Rounded corners */
@@ -124,11 +132,14 @@ body {
     height: 30px; /* Set the height as desired */
     /* Use object-fit if you want to maintain the aspect ratio */
     object-fit: contain;
+    padding-right: 5px; /* Add some space to the right */
 }
 
-.note-name {
-    font-size: 20px; /* Adjust the size as needed */
-    margin-right: 5px; /* Add some space between the icon and the text */
+.note-select {
+    font-size: 14px; /* Adjust the size as needed */
+    margin-left: 5px; /* Add some space to the left */
+    margin-right: 5px; /* Add some space to the right */
+
     /* raise the note up a little */
     position: relative;
 }
