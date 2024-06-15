@@ -7,6 +7,7 @@ These are the options:
 4. Time signature is common time, 4/4
 5. Option to include 32nd notes
 6. Export to PNG
+7. Note editing
 
 You can Play or Delete any jingles you create.
 
