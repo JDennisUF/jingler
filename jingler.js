@@ -263,6 +263,8 @@ let tempo = 120;
 let numNotesMax = 4;
 let timeSignatureNotesPerMeasure = 4;
 let timeSignatureNoteValue = 4;
+let synth = new Tone.Synth().toDestination();
+let oscillatorType = 'sine';
 
 populateScaleSelect();
 
@@ -321,6 +323,42 @@ document.getElementById('include32ndNotes').addEventListener('change', function 
         }
     }
 });
+document.getElementById('synthType').addEventListener('change', function() {
+    const selectedSynthType = this.value;
+    
+    // avoid memory leaks by disposing of the previous synth
+    if (synth) {
+        synth.dispose();
+    }
+    switch(selectedSynthType) {
+        case 'Synth':
+            synth = new Tone.Synth().toDestination();
+            break;
+        case 'AMSynth':
+            synth = new Tone.AMSynth().toDestination();
+            break;
+        case 'FMSynth':
+            synth = new Tone.FMSynth().toDestination();
+            break;
+        case 'MonoSynth':
+            synth = new Tone.MonoSynth().toDestination();
+            break;
+        case 'DuoSynth':
+            synth = new Tone.DuoSynth().toDestination();
+            break;
+        case 'MetalSynth':
+            synth = new Tone.MetalSynth().toDestination();
+            break;
+        default:
+            console.log('Unknown synth type');
+    }
+
+    synth.oscillator.type = oscillatorType;
+});
+document.getElementById('oscillatorType').addEventListener('change', function () {
+    oscillatorType = this.value;
+    synth.oscillator.type = oscillatorType;
+});
 
 //#region Functions
 function generateJingle() {
@@ -333,14 +371,6 @@ function generateJingle() {
 }
 
 function playJingle(jingle) {
-    // Create a synth and connect it to the main output
-    // const synth = new Tone.Synth().toDestination();
-    // Create a synth with a different waveform
-    const synth = new Tone.Synth({
-        oscillator: {
-            type: 'triangle' // Options: 'sine', 'square', 'triangle', 'sawtooth'
-        }
-    }).toDestination();
 
     Tone.Transport.stop();
     Tone.Transport.cancel();
@@ -527,9 +557,21 @@ function drawMusicalStaff(jingle) {
         voices: [
             score.voice(score.notes(jingleNotes, { stem: 'up' })),
         ]
-    }).addClef('treble').addTimeSignature(getTimeSignature());
+    }).addClef('treble').addTimeSignature(getTimeSignature()).addKeySignature(getKeySignature(jingle[0].scale.name));
 
     vf.draw();
+}
+
+function getKeySignature(key) {
+    // Check if the key includes "Major" or "Minor" and format accordingly
+    if (key.includes(" Major")) {
+        return key.replace(" Major", "");
+    } else if (key.includes("Minor")) {
+        return key.replace(" Minor", "m");
+    } else {
+        // Return the original key if it doesn't match the expected patterns
+        return key;
+    }
 }
 
 function convertNoteToVexFlowFormat(noteValue, frequency, duration, resting, scale) {
