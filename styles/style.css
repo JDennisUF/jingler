@@ -105,7 +105,7 @@ body {
 .button-row, .input-row {
     display: flex;
     justify-content: left; /* Distribute space between items */
-    margin-bottom: 10px; /* Add some space below each row */
+    margin-bottom: 5px; /* Add some space below each row */
 }
 
 .input-row > p {
@@ -117,6 +117,7 @@ body {
 
 .input-row input[type="number"] {
     width: 44px; /* Or any other value */
+    height: 12px;
 }
 
 .banner {
