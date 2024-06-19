@@ -42,7 +42,7 @@ ul {
 
 body {
     position: relative;
-    padding: 0 20px 20px 20px;
+    padding: 0 10px 10px 10px;
 }
 
 .logo {
@@ -105,7 +105,7 @@ body {
 .button-row, .input-row {
     display: flex;
     justify-content: left; /* Distribute space between items */
-    margin-bottom: 5px; /* Add some space below each row */
+    margin-bottom: 1px; /* Add some space below each row */
 }
 
 .input-row > p {
@@ -113,11 +113,12 @@ body {
     align-items: center;
     justify-content: left; /* Space between label and input */
     margin-right: 20px; /* Space between input groups */
+    height: 10px;
 }
 
 .input-row input[type="number"] {
     width: 44px; /* Or any other value */
-    height: 12px;
+    height: 10px;
 }
 
 .banner {

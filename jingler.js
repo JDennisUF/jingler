@@ -359,6 +359,10 @@ document.getElementById('oscillatorType').addEventListener('change', function ()
     oscillatorType = this.value;
     synth.oscillator.type = oscillatorType;
 });
+document.getElementById('delete-all-jingles').addEventListener('click', function() {
+    savedJingles = [];
+    displaySavedJingles();
+});
 
 //#region Functions
 function generateJingle() {
@@ -608,7 +612,7 @@ function getTimeSignature() {
 }
 
 function getMiddleNote(scale) {
-    const middleNote = scale.notes[Math.floor(scale.notes.length / 2) + 2];
+    const middleNote = scale.notes[Math.floor(scale.notes.length / 2) + 1];
 
     return middleNote;
 }
