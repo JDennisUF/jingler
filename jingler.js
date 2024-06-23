@@ -252,9 +252,17 @@ const restDurations = {
     "16n": 192 / 4, // Sixteenth note rest
     "32n": 192 / 8  // Thirty-second note rest
 };
+const validOscillatorsBySynth = {
+    Synth: ['sine', 'square', 'triangle', 'sawtooth', 'pwm'],
+    AMSynth: ['sine', 'square', 'triangle', 'sawtooth', 'pwm'],
+    FMSynth: ['sine', 'square', 'triangle', 'sawtooth', 'pwm'],
+    MonoSynth: ['sine', 'square', 'triangle', 'sawtooth', 'pwm'],
+    DuoSynth: ['sine'],
+    MetalSynth: ['sine']
+};
 
 const ticksPerQuarterNote = 192;
-const noteDurations = ["2", "4", "8", "16"]; // Possible note durations, omitting whole notes (32nd notes are optional)
+const noteDurations = ["2", "4", "4", "8", "8", "16", "16"]; // Possible note durations, omitting whole notes (32nd notes are optional)
 
 let selectedScale = scales[0];
 let currentJingle = [];
@@ -323,14 +331,14 @@ document.getElementById('include32ndNotes').addEventListener('change', function 
         }
     }
 });
-document.getElementById('synthType').addEventListener('change', function() {
+document.getElementById('synthType').addEventListener('change', function () {
     const selectedSynthType = this.value;
-    
+
     // avoid memory leaks by disposing of the previous synth
     if (synth) {
         synth.dispose();
     }
-    switch(selectedSynthType) {
+    switch (selectedSynthType) {
         case 'Synth':
             synth = new Tone.Synth().toDestination();
             break;
@@ -353,13 +361,15 @@ document.getElementById('synthType').addEventListener('change', function() {
             console.log('Unknown synth type');
     }
 
+    updateOscillatorSelect(selectedSynthType);
+    synth.oscillator = new Tone.Oscillator().toDestination();
     synth.oscillator.type = oscillatorType;
 });
 document.getElementById('oscillatorType').addEventListener('change', function () {
     oscillatorType = this.value;
     synth.oscillator.type = oscillatorType;
 });
-document.getElementById('delete-all-jingles').addEventListener('click', function() {
+document.getElementById('delete-all-jingles').addEventListener('click', function () {
     savedJingles = [];
     displaySavedJingles();
 });
@@ -476,7 +486,7 @@ function createJingle() {
     let resting = false;
 
     currentJingle = [];
-    
+
     // get the amount of ticks left in the current measure
     while (ticksInCurrentJingle < totalTicksPerMeasure) {
         noteDuration = noteDurations[Math.floor(Math.random() * noteDurations.length)] + 'n';
@@ -662,4 +672,27 @@ function exportAllNotesFromScales() {
     });
 
     console.log(allNotes);
-}   
+}
+
+// Function to update the Oscillator Select based on the selected synth
+function updateOscillatorSelect(selectedSynthType) {
+    const oscillatorSelect = document.getElementById('oscillatorType');
+    const validOscillators = validOscillatorsBySynth[selectedSynthType] || [];
+
+    // Clear existing options
+    oscillatorSelect.innerHTML = '';
+
+    // Populate with valid options
+    validOscillators.forEach(oscillatorType => {
+        const option = document.createElement('option');
+        option.value = oscillatorType;
+        option.textContent = oscillatorType;
+        oscillatorSelect.appendChild(option);
+    });
+
+    // Set oscillator to 'sine' if the current one is no longer valid
+    if (!validOscillators.includes(oscillatorType)) {
+        oscillatorType = 'sine';
+    }
+    oscillatorSelect.value = oscillatorType;
+}
