@@ -6,3 +6,7 @@ node_modules/
 
 # Mac litter
 .DS_Store
+.idea/jingler.iml
+.idea/modules.xml
+.idea/php.xml
+.idea/vcs.xml
