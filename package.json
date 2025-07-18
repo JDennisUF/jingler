@@ -4,7 +4,7 @@
   "description": "Jingler",
   "main": "jingleGenerator.js",
   "scripts": {
-    "start": "node jingleGenerator.js",
+    "start": "node jingler.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Jason Dennis",

@@ -416,7 +416,9 @@ function displaySavedJingles() {
     listElement.innerHTML = ''; // Clear existing entries
     listElement.style.listStyleType = 'none';
 
-    savedJingles.forEach((jingle, index) => {
+    // Display jingles in reverse order (newest first)
+    savedJingles.slice().reverse().forEach((jingle, reverseIndex) => {
+        const index = savedJingles.length - 1 - reverseIndex; // Calculate original index for deletion
         const listItem = document.createElement('li');
 
         // play button

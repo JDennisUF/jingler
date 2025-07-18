@@ -20,59 +20,81 @@
         <br><br><br>
     </div>
     <p>Welcome to Jingler! Here you can create your own jingles and share them with the world.</p>
-    <div class="input-row">
-
-        <p>Select scale:
-            <select id="scale">
-                <!-- auto-generated -->
-            </select>
-        </p>
-        <p>Tempo (BPM):
-            <input type="number" id="tempo" value="120" min="20" max="300">
-        </p>
-        <p>Max # Notes:
-            <input type="number" id="numNotesMax" value="6" min="2" max="20">
-        </p>
-        <p>Signature:
-            <select id="timeSignature" disabled="true">
-                <!-- enable signature dropdown when implemented -->
-                <option value="4/4">4/4</option>
-                <option value="3/4">3/4</option>
-                <option value="2/4">2/4</option>
-                <option value="6/8">6/8</option>
-            </select>
-        </p>
-        <p>
-            <label for="include32ndNotes">32nd Notes?</label>
-            <input type="checkbox" id="include32ndNotes" name="include32ndNotes">
-        </p>
-    </div>
-    <div class="input-row">
-        <p>Synthesizer:
-            <select id="synthType">
-                <option value="Synth">Synth</option>
-                <option value="AMSynth">AMSynth</option>
-                <option value="FMSynth">FMSynth</option>
-                <option value="MonoSynth">MonoSynth</option>
-                <option value="DuoSynth">DuoSynth</option>
-                <option value="MetalSynth">MetalSynth</option>
-            </select>
-        </p>
-        <p>Oscillator:
-            <select id="oscillatorType">
-               <option value="sine">sine</option>
-               <option value="square">square</option>
-               <option value="triangle">triangle</option>
-               <option value="sawtooth">sawtooth</option>
-               <option value="pwm">pwm</option>
-            </select>
-        </p>
+    
+    <div class="controls-container">
+        <div class="control-section">
+            <h3>Musical Settings</h3>
+            <div class="control-group">
+                <div class="control-item">
+                    <label for="scale">Scale:</label>
+                    <select id="scale">
+                        <!-- auto-generated -->
+                    </select>
+                </div>
+                <div class="control-item">
+                    <label for="tempo">Tempo (BPM):</label>
+                    <input type="number" id="tempo" value="120" min="20" max="300">
+                </div>
+                <div class="control-item">
+                    <label for="numNotesMax">Max # Notes:</label>
+                    <input type="number" id="numNotesMax" value="6" min="2" max="20">
+                </div>
+                <div class="control-item">
+                    <label for="timeSignature">Time Signature:</label>
+                    <select id="timeSignature" disabled="true">
+                        <!-- enable signature dropdown when implemented -->
+                        <option value="4/4">4/4</option>
+                        <option value="3/4">3/4</option>
+                        <option value="2/4">2/4</option>
+                        <option value="6/8">6/8</option>
+                    </select>
+                </div>
+                <div class="control-item checkbox-item">
+                    <input type="checkbox" id="include32ndNotes" name="include32ndNotes">
+                    <label for="include32ndNotes">Include 32nd Notes</label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="control-section">
+            <h3>Audio Settings</h3>
+            <div class="control-group">
+                <div class="control-item">
+                    <label for="synthType">Synthesizer:</label>
+                    <select id="synthType">
+                        <option value="Synth">Synth</option>
+                        <option value="AMSynth">AMSynth</option>
+                        <option value="FMSynth">FMSynth</option>
+                        <option value="MonoSynth">MonoSynth</option>
+                        <option value="DuoSynth">DuoSynth</option>
+                        <option value="MetalSynth">MetalSynth</option>
+                    </select>
+                </div>
+                <div class="control-item">
+                    <label for="oscillatorType">Oscillator:</label>
+                    <select id="oscillatorType">
+                       <option value="sine">sine</option>
+                       <option value="square">square</option>
+                       <option value="triangle">triangle</option>
+                       <option value="sawtooth">sawtooth</option>
+                       <option value="pwm">pwm</option>
+                    </select>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="button-row">
         <button id="generate" class="styled-button">New Jingle</button>
         <button id="export-music-staff" class="styled-button">Export</button>
         <button id="delete-all-jingles" class="styled-button">Delete All</button>
     </div>
+    
+    <div class="musical-staff">
+        <div class="vexbox">
+            <div id="musicalstaff"></div>
+        </div>
+    </div>
+    
     <p>Here are your jingles:</p>
     <ul id="savedJingles">
         <div id="savedJinglesDisplay">
@@ -81,12 +103,6 @@
     </ul>
     <script src="jingler.js"></script>
 </body>
-
-<div class="musical-staff">
-    <div class="vexbox">
-        <div id="musicalstaff"></div>
-    </div>
-</div>
 
 <footer>
     <p>&copy; 2024 Jason Dennis</p>
