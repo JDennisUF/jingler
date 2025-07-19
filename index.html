@@ -15,13 +15,25 @@
 <body>
     <img src="images/jinglerlogo.webp" alt="Jingler Logo" class="logo" />
     <div class="banner">
-        <h1>Jingler</h1>
-        <h2>The Jingle Maker</h2>
-        <br><br><br>
+        <h1>Jingler ♪</h1>
+        <h2>The Jingle Maker ♫</h2>
     </div>
     <p>Welcome to Jingler! Here you can create your own jingles and share them with the world.</p>
     
-    <div class="controls-container">
+    <!-- Compact parameter display -->
+    <div class="params-summary">
+        <div class="params-display">
+            <span class="param-item">Scale: <strong id="scale-display">C Major</strong></span>
+            <span class="param-item">Tempo: <strong id="tempo-display">120</strong> BPM</span>
+            <span class="param-item">Max Notes: <strong id="notes-display">6</strong></span>
+            <span class="param-item">Synth: <strong id="synth-display">Synth</strong></span>
+            <span class="param-item">Oscillator: <strong id="osc-display">sine</strong></span>
+        </div>
+        <button id="toggle-settings" class="settings-toggle">⚙️ Settings</button>
+    </div>
+    
+    <!-- Full controls (initially hidden) -->
+    <div class="controls-container" id="controls-container" style="display: none;">
         <div class="control-section">
             <h3>Musical Settings</h3>
             <div class="control-group">

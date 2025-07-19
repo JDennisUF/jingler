@@ -276,16 +276,33 @@ let oscillatorType = 'sine';
 
 populateScaleSelect();
 
+// Initialize parameter display
+updateParameterDisplay();
+
+// Settings toggle functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleButton = document.getElementById('toggle-settings');
+    if (toggleButton) {
+        toggleButton.addEventListener('click', function () {
+            console.log('Toggle button clicked!'); // Debug log
+            const controlsContainer = document.getElementById('controls-container');
+            
+            if (controlsContainer.style.display === 'none' || controlsContainer.style.display === '') {
+                controlsContainer.style.display = 'grid';
+                toggleButton.textContent = '⚙️ Hide Settings';
+                toggleButton.classList.add('active');
+            } else {
+                controlsContainer.style.display = 'none';
+                toggleButton.textContent = '⚙️ Settings';
+                toggleButton.classList.remove('active');
+            }
+        });
+    } else {
+        console.error('Toggle button not found!');
+    }
+});
+
 document.getElementById('generate').addEventListener('click', generateJingle);
-document.getElementById('tempo').addEventListener('input', function () {
-    tempo = parseInt(this.value);
-});
-document.getElementById('numNotesMax').addEventListener('input', function () {
-    numNotesMax = parseInt(this.value);
-});
-document.getElementById('scale').addEventListener('change', function () {
-    selectedScale = scales.find(scale => scale.name === this.value);
-});
 document.getElementById('timeSignature').addEventListener('input', function () {
     // e.g. 4/4 = 4 and 4, 3/4 = 3 and 4
     timeSignatureNotesPerMeasure = parseInt(this.value.split('/')[0]);
@@ -331,8 +348,36 @@ document.getElementById('include32ndNotes').addEventListener('change', function 
         }
     }
 });
+document.getElementById('delete-all-jingles').addEventListener('click', function () {
+    savedJingles = [];
+    displaySavedJingles();
+});
+
+// Update parameter display when values change
+function updateParameterDisplay() {
+    document.getElementById('scale-display').textContent = selectedScale.name;
+    document.getElementById('tempo-display').textContent = tempo;
+    document.getElementById('notes-display').textContent = numNotesMax;
+    document.getElementById('synth-display').textContent = document.getElementById('synthType').value;
+    document.getElementById('osc-display').textContent = oscillatorType;
+}
+
+// Add event listeners to update display when controls change
+document.getElementById('tempo').addEventListener('input', function () {
+    tempo = parseInt(this.value);
+    updateParameterDisplay();
+});
+document.getElementById('numNotesMax').addEventListener('input', function () {
+    numNotesMax = parseInt(this.value);
+    updateParameterDisplay();
+});
+document.getElementById('scale').addEventListener('change', function () {
+    selectedScale = scales.find(scale => scale.name === this.value);
+    updateParameterDisplay();
+});
 document.getElementById('synthType').addEventListener('change', function () {
     const selectedSynthType = this.value;
+    updateParameterDisplay();
 
     // avoid memory leaks by disposing of the previous synth
     if (synth) {
@@ -368,10 +413,7 @@ document.getElementById('synthType').addEventListener('change', function () {
 document.getElementById('oscillatorType').addEventListener('change', function () {
     oscillatorType = this.value;
     synth.oscillator.type = oscillatorType;
-});
-document.getElementById('delete-all-jingles').addEventListener('click', function () {
-    savedJingles = [];
-    displaySavedJingles();
+    updateParameterDisplay();
 });
 
 //#region Functions
