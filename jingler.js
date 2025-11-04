@@ -464,26 +464,37 @@ function displaySavedJingles() {
     savedJingles.slice().reverse().forEach((jingle, reverseIndex) => {
         const index = savedJingles.length - 1 - reverseIndex; // Calculate original index for deletion
         const listItem = document.createElement('li');
+        listItem.className = 'saved-jingle-card';
+
+        const actionsContainer = document.createElement('div');
+        actionsContainer.className = 'jingle-actions';
 
         // play button
         const playButton = document.createElement('button');
-        playButton.textContent = 'Play';
-        playButton.className = 'styled-button-small';
+        playButton.type = 'button';
+        playButton.className = 'jingle-action play';
+        playButton.innerHTML = '<span class="icon" aria-hidden="true">▶</span><span class="label">Play</span>';
+        playButton.setAttribute('aria-label', 'Play this jingle');
         playButton.onclick = () => playJingle(jingle);
-        listItem.appendChild(playButton);
+        actionsContainer.appendChild(playButton);
 
         // delete button
         const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Delete';
-        deleteButton.className = 'styled-button-small';
+        deleteButton.type = 'button';
+        deleteButton.className = 'jingle-action delete';
+        deleteButton.innerHTML = '<span class="icon" aria-hidden="true">🗑</span><span class="label">Delete</span>';
+        deleteButton.setAttribute('aria-label', 'Delete this jingle');
         deleteButton.onclick = () => {
             savedJingles.splice(index, 1); // Remove the jingle from the array
             displaySavedJingles(); // Refresh the list display
         };
-        listItem.appendChild(deleteButton);
+        actionsContainer.appendChild(deleteButton);
 
-        // add jingle    
+        listItem.appendChild(actionsContainer);
+
+        // add jingle
         const notesContainer = document.createElement('span');
+        notesContainer.className = 'saved-jingle-notes';
         jingle.filter(note => !note.resting).forEach(note => {
             // Create a select element
             const noteSelect = document.createElement('select');
