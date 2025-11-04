@@ -390,12 +390,13 @@ main {
 }
 
 .secondary-action {
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.85), rgba(99, 102, 241, 0.85));
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.95), rgba(129, 140, 248, 0.95));
+    box-shadow: 0 20px 45px rgba(56, 189, 248, 0.32);
 }
 
 .danger-action {
-    background: linear-gradient(135deg, rgba(248, 113, 113, 0.85), rgba(220, 38, 38, 0.85));
-    box-shadow: 0 14px 35px rgba(248, 113, 113, 0.32);
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.95), rgba(124, 58, 237, 0.9));
+    box-shadow: 0 20px 45px rgba(236, 72, 153, 0.32);
 }
 
 .button-row {
@@ -506,16 +507,16 @@ ul {
     align-items: center;
     gap: 0.45rem;
     padding: 0.45rem 0.9rem;
-    border: none;
     border-radius: 999px;
     font-family: var(--font-body);
     font-weight: 600;
     font-size: 0.9rem;
     cursor: pointer;
-    background: rgba(241, 245, 249, 0.85);
-    color: #0f172a;
-    box-shadow: 0 10px 22px rgba(148, 163, 184, 0.35);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.78), rgba(30, 41, 59, 0.9));
+    color: var(--text-primary);
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.45);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .jingle-action .icon {
@@ -527,19 +528,22 @@ ul {
 }
 
 .jingle-action.play {
-    background: linear-gradient(135deg, rgba(52, 211, 153, 0.9), rgba(34, 211, 238, 0.9));
-    color: #022c22;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.82), rgba(124, 58, 237, 0.78));
+    border-color: rgba(56, 189, 248, 0.65);
+    color: rgba(15, 23, 42, 0.92);
 }
 
 .jingle-action.delete {
-    background: linear-gradient(135deg, rgba(248, 113, 113, 0.92), rgba(244, 63, 94, 0.92));
-    color: #fff;
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.85), rgba(124, 58, 237, 0.75));
+    border-color: rgba(236, 72, 153, 0.6);
+    color: rgba(15, 23, 42, 0.92);
 }
 
 .jingle-action:hover,
 .jingle-action:focus {
     transform: translateY(-2px);
-    box-shadow: 0 16px 30px rgba(148, 163, 184, 0.45);
+    box-shadow: 0 20px 36px rgba(15, 23, 42, 0.55);
+    border-color: rgba(148, 163, 184, 0.55);
     outline: none;
 }
 
