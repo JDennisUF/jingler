@@ -252,6 +252,14 @@ const restDurations = {
     "16n": 192 / 4, // Sixteenth note rest
     "32n": 192 / 8  // Thirty-second note rest
 };
+const restDurationWeights = {
+    "32n": 5,
+    "16n": 4,
+    "8n": 3,
+    "4n": 2,
+    "2n": 1,
+    "n": 1
+};
 const validOscillatorsBySynth = {
     Synth: ['sine', 'square', 'triangle', 'sawtooth', 'pwm'],
     AMSynth: ['sine', 'square', 'triangle', 'sawtooth', 'pwm'],
@@ -263,6 +271,7 @@ const validOscillatorsBySynth = {
 
 const ticksPerQuarterNote = 192;
 const noteDurations = ["2", "4", "4", "8", "8", "16", "16"]; // Possible note durations, omitting whole notes (32nd notes are optional)
+const randomRestProbability = 0.15; // Chance to insert a spontaneous rest within a measure
 
 let selectedScale = scales[0];
 let currentJingle = [];
@@ -442,15 +451,13 @@ function playJingle(jingle) {
 
     let currentTime = 0;
     // Schedule each note in the jingle to be played
-    jingle.forEach(({ note, duration, resting }, index) => {
-
+    jingle.forEach(({ note, duration, resting }) => {
         if (!resting) {
             Tone.Transport.schedule(time => {
                 synth.triggerAttackRelease(note, duration, time);
             }, currentTime);
-
-            currentTime += Tone.Time(duration).toSeconds();
         }
+        currentTime += Tone.Time(duration).toSeconds();
     });
 
     // Start the Transport to play the notes
@@ -556,6 +563,26 @@ function createJingle(timeSignatureConfig = getCurrentTimeSignatureConfig()) {
 
     // get the amount of ticks left in the current measure
     while (ticksInCurrentJingle < totalTicksPerMeasure) {
+        resting = false;
+        const remainingTicks = totalTicksPerMeasure - ticksInCurrentJingle;
+
+        if (numNotes > 0 && Math.random() < randomRestProbability) {
+            const randomRestDuration = getRandomRestDuration(remainingTicks);
+            if (randomRestDuration) {
+                const restNote = getMiddleNoteFrequency(selectedScale);
+                const restNoteName = getMiddleNoteName(selectedScale);
+                currentJingle.push({
+                    note: restNote,
+                    duration: randomRestDuration,
+                    noteName: restNoteName,
+                    resting: true,
+                    scale: selectedScale
+                });
+                ticksInCurrentJingle += Tone.Time(randomRestDuration).toTicks();
+                continue;
+            }
+        }
+
         noteDuration = noteDurations[Math.floor(Math.random() * noteDurations.length)] + 'n';
         let note = notes[Math.floor(Math.random() * notes.length)];
         let noteName = selectedScale.notenames[notes.indexOf(note)];
@@ -566,36 +593,42 @@ function createJingle(timeSignatureConfig = getCurrentTimeSignatureConfig()) {
             continue;
         }
 
-        // If the duration is too long to fit in the measure, get a shorter duration
-        if (ticksInCurrentJingle + Tone.Time(noteDuration).toTicks() > totalTicksPerMeasure) {
-            numNotes--;
-            ticksInCurrentJingle -= Tone.Time(currentJingle[currentJingle.length - 1].duration).toTicks();
-            currentJingle.pop(); // Remove the last note to try again
+        const durationTicks = Tone.Time(noteDuration).toTicks();
+
+        // If the duration is too long to fit in the measure, remove the previous event and try again
+        if (durationTicks > remainingTicks) {
+            const removedEvent = currentJingle.pop();
+            if (removedEvent) {
+                ticksInCurrentJingle -= Tone.Time(removedEvent.duration).toTicks();
+                if (!removedEvent.resting) {
+                    numNotes--;
+                }
+            }
+            continue;
+        }
+
+        numNotes++;
+        resting = (numNotes > numNotesMax);
+        if (resting) {
+            note = getMiddleNoteFrequency(selectedScale);
+            noteName = getMiddleNoteName(selectedScale);
+            // Get the array of rests that fit in the remaining measure
+            let restsForMeasure = calculateRestsForRemainingTicks(ticksInCurrentJingle, totalTicksPerMeasure);
+            // Iterate over the array and push each rest to currentJingle
+            restsForMeasure.forEach(restDuration => {
+                currentJingle.push({
+                    note: note,
+                    duration: restDuration,
+                    noteName: noteName,
+                    resting: true,
+                    scale: selectedScale
+                });
+                ticksInCurrentJingle += Tone.Time(restDuration).toTicks();
+            });
         }
         else {
-            numNotes++;
-            resting = (numNotes > numNotesMax);
-            if (resting) {
-                note = getMiddleNoteFrequency(selectedScale);
-                noteName = getMiddleNoteName(selectedScale);
-                // Get the array of rests that fit in the remaining measure
-                let restsForMeasure = calculateRestsForRemainingTicks(ticksInCurrentJingle, totalTicksPerMeasure);
-                // Iterate over the array and push each rest to currentJingle
-                restsForMeasure.forEach(restDuration => {
-                    currentJingle.push({
-                        note: note,
-                        duration: restDuration,
-                        noteName: noteName,
-                        resting: true,
-                        scale: selectedScale
-                    });
-                    ticksInCurrentJingle += Tone.Time(restDuration).toTicks();
-                });
-            }
-            else {
-                currentJingle.push({ note, duration: noteDuration, noteName, resting, scale: selectedScale });
-                ticksInCurrentJingle += Tone.Time(noteDuration).toTicks();
-            }
+            currentJingle.push({ note, duration: noteDuration, noteName, resting, scale: selectedScale });
+            ticksInCurrentJingle += durationTicks;
         }
     }
 
@@ -690,6 +723,26 @@ function calculateRestsForRemainingTicks(usedTicks, totalTicksPerMeasure) {
     }
 
     return restsNeeded;
+}
+
+function getRandomRestDuration(remainingTicks) {
+    const availableDurations = [];
+
+    Object.entries(restDurationWeights).forEach(([duration, weight]) => {
+        const durationTicks = restDurations[duration];
+        if (durationTicks && durationTicks <= remainingTicks) {
+            for (let i = 0; i < weight; i++) {
+                availableDurations.push(duration);
+            }
+        }
+    });
+
+    if (!availableDurations.length) {
+        return null;
+    }
+
+    const randomIndex = Math.floor(Math.random() * availableDurations.length);
+    return availableDurations[randomIndex];
 }
 
 function getCurrentTimeSignatureConfig() {
