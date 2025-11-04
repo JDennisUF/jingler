@@ -286,15 +286,17 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleButton.addEventListener('click', function () {
             console.log('Toggle button clicked!'); // Debug log
             const controlsContainer = document.getElementById('controls-container');
-            
+
             if (controlsContainer.style.display === 'none' || controlsContainer.style.display === '') {
                 controlsContainer.style.display = 'grid';
                 toggleButton.textContent = '⚙️ Hide Settings';
                 toggleButton.classList.add('active');
+                toggleButton.setAttribute('aria-expanded', 'true');
             } else {
                 controlsContainer.style.display = 'none';
                 toggleButton.textContent = '⚙️ Settings';
                 toggleButton.classList.remove('active');
+                toggleButton.setAttribute('aria-expanded', 'false');
             }
         });
     } else {
