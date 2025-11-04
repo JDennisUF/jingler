@@ -42,8 +42,8 @@
         </section>
 
         <section class="app-grid" aria-label="Jingle creation workspace">
-            <aside class="controls-column" aria-label="Settings and controls">
-                <div class="glass-card params-summary" role="status" aria-live="polite">
+            <section class="glass-card params-panel" aria-label="Settings and controls" role="status" aria-live="polite">
+                <div class="params-bar">
                     <div class="params-display">
                         <span class="param-item">Scale: <strong id="scale-display">C Major</strong></span>
                         <span class="param-item">Tempo: <strong id="tempo-display">120</strong> BPM</span>
@@ -54,91 +54,87 @@
                     <button id="toggle-settings" class="settings-toggle" aria-expanded="false">⚙️ Settings</button>
                 </div>
 
-                <section class="glass-card controls-shell" aria-label="Detailed settings">
-                    <div class="controls-container" id="controls-container" style="display: none;">
-                        <div class="control-section">
-                            <h3>Musical Settings</h3>
-                            <div class="control-group">
-                                <div class="control-item">
-                                    <label for="scale">Scale</label>
-                                    <select id="scale"></select>
-                                </div>
-                                <div class="control-item">
-                                    <label for="tempo">Tempo (BPM)</label>
-                                    <input type="number" id="tempo" value="120" min="20" max="300">
-                                </div>
-                                <div class="control-item">
-                                    <label for="numNotesMax">Max # Notes</label>
-                                    <input type="number" id="numNotesMax" value="6" min="2" max="20">
-                                </div>
-                                <div class="control-item">
-                                    <label for="timeSignature">Time Signature</label>
-                                    <select id="timeSignature" disabled="true">
-                                        <option value="4/4">4/4</option>
-                                        <option value="3/4">3/4</option>
-                                        <option value="2/4">2/4</option>
-                                        <option value="6/8">6/8</option>
-                                    </select>
-                                </div>
-                                <div class="control-item checkbox-item">
-                                    <input type="checkbox" id="include32ndNotes" name="include32ndNotes">
-                                    <label for="include32ndNotes">Include 32nd Notes</label>
-                                </div>
+                <div class="controls-container" id="controls-container" style="display: none;">
+                    <div class="control-section">
+                        <h3>Musical Settings</h3>
+                        <div class="control-group">
+                            <div class="control-item">
+                                <label for="scale">Scale</label>
+                                <select id="scale"></select>
                             </div>
-                        </div>
-
-                        <div class="control-section">
-                            <h3>Audio Settings</h3>
-                            <div class="control-group">
-                                <div class="control-item">
-                                    <label for="synthType">Synthesizer</label>
-                                    <select id="synthType">
-                                        <option value="Synth">Synth</option>
-                                        <option value="AMSynth">AMSynth</option>
-                                        <option value="FMSynth">FMSynth</option>
-                                        <option value="MonoSynth">MonoSynth</option>
-                                        <option value="DuoSynth">DuoSynth</option>
-                                        <option value="MetalSynth">MetalSynth</option>
-                                    </select>
-                                </div>
-                                <div class="control-item">
-                                    <label for="oscillatorType">Oscillator</label>
-                                    <select id="oscillatorType">
-                                        <option value="sine">sine</option>
-                                        <option value="square">square</option>
-                                        <option value="triangle">triangle</option>
-                                        <option value="sawtooth">sawtooth</option>
-                                        <option value="pwm">pwm</option>
-                                    </select>
-                                </div>
+                            <div class="control-item">
+                                <label for="tempo">Tempo (BPM)</label>
+                                <input type="number" id="tempo" value="120" min="20" max="300">
+                            </div>
+                            <div class="control-item">
+                                <label for="numNotesMax">Max # Notes</label>
+                                <input type="number" id="numNotesMax" value="6" min="2" max="20">
+                            </div>
+                            <div class="control-item">
+                                <label for="timeSignature">Time Signature</label>
+                                <select id="timeSignature" disabled="true">
+                                    <option value="4/4">4/4</option>
+                                    <option value="3/4">3/4</option>
+                                    <option value="2/4">2/4</option>
+                                    <option value="6/8">6/8</option>
+                                </select>
+                            </div>
+                            <div class="control-item checkbox-item">
+                                <input type="checkbox" id="include32ndNotes" name="include32ndNotes">
+                                <label for="include32ndNotes">Include 32nd Notes</label>
                             </div>
                         </div>
                     </div>
-                </section>
-            </aside>
 
-            <section class="stave-column" aria-label="Playback and saved jingles">
-                <div class="glass-card playback-card">
-                    <div class="button-row">
-                        <button id="export-music-staff" class="styled-button secondary-action">Export</button>
-                        <button id="delete-all-jingles" class="styled-button danger-action">Delete All</button>
-                    </div>
-                    <div class="musical-staff">
-                        <div class="vexbox">
-                            <div id="musicalstaff"></div>
+                    <div class="control-section">
+                        <h3>Audio Settings</h3>
+                        <div class="control-group">
+                            <div class="control-item">
+                                <label for="synthType">Synthesizer</label>
+                                <select id="synthType">
+                                    <option value="Synth">Synth</option>
+                                    <option value="AMSynth">AMSynth</option>
+                                    <option value="FMSynth">FMSynth</option>
+                                    <option value="MonoSynth">MonoSynth</option>
+                                    <option value="DuoSynth">DuoSynth</option>
+                                    <option value="MetalSynth">MetalSynth</option>
+                                </select>
+                            </div>
+                            <div class="control-item">
+                                <label for="oscillatorType">Oscillator</label>
+                                <select id="oscillatorType">
+                                    <option value="sine">sine</option>
+                                    <option value="square">square</option>
+                                    <option value="triangle">triangle</option>
+                                    <option value="sawtooth">sawtooth</option>
+                                    <option value="pwm">pwm</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <section class="glass-card library" aria-labelledby="library-heading">
-                    <div class="library-header">
-                        <h2 id="library-heading">Saved Jingles</h2>
-                        <p>Revisit your compositions and rework them on the fly.</p>
+            <section class="glass-card playback-card" aria-label="Playback controls and musical staff">
+                <div class="button-row">
+                    <button id="export-music-staff" class="styled-button secondary-action">Export</button>
+                    <button id="delete-all-jingles" class="styled-button danger-action">Delete All</button>
+                </div>
+                <div class="musical-staff">
+                    <div class="vexbox">
+                        <div id="musicalstaff"></div>
                     </div>
-                    <ul id="savedJingles">
-                        <div id="savedJinglesDisplay"></div>
-                    </ul>
-                </section>
+                </div>
+            </section>
+
+            <section class="glass-card library" aria-labelledby="library-heading">
+                <div class="library-header">
+                    <h2 id="library-heading">Saved Jingles</h2>
+                    <p>Revisit your compositions and rework them on the fly.</p>
+                </div>
+                <ul id="savedJingles">
+                    <div id="savedJinglesDisplay"></div>
+                </ul>
             </section>
         </section>
     </main>

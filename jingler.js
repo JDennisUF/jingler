@@ -466,6 +466,10 @@ function displaySavedJingles() {
         const listItem = document.createElement('li');
         listItem.className = 'saved-jingle-card';
 
+        const notesContainer = document.createElement('span');
+        notesContainer.className = 'saved-jingle-notes';
+        listItem.appendChild(notesContainer);
+
         const actionsContainer = document.createElement('div');
         actionsContainer.className = 'jingle-actions';
 
@@ -493,8 +497,6 @@ function displaySavedJingles() {
         listItem.appendChild(actionsContainer);
 
         // add jingle
-        const notesContainer = document.createElement('span');
-        notesContainer.className = 'saved-jingle-notes';
         jingle.filter(note => !note.resting).forEach(note => {
             // Create a select element
             const noteSelect = document.createElement('select');
@@ -529,7 +531,6 @@ function displaySavedJingles() {
             noteIcon.className = 'small-note-icon'; // Add a class for styling if needed
             notesContainer.appendChild(noteIcon);
         });
-        listItem.appendChild(notesContainer);
         listElement.appendChild(listItem);
     });
 }

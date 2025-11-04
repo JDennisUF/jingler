@@ -193,10 +193,9 @@ main {
 }
 
 .app-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+    display: flex;
+    flex-direction: column;
     gap: var(--spacing-xl);
-    align-items: start;
 }
 
 .glass-card {
@@ -208,13 +207,22 @@ main {
     backdrop-filter: blur(18px);
 }
 
-.params-summary {
+.params-panel {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-md);
+    gap: var(--spacing-lg);
+    width: 100%;
+}
+
+.params-bar {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
 }
 
 .params-display {
+    flex: 1 1 320px;
     display: flex;
     flex-wrap: wrap;
     gap: var(--spacing-sm) var(--spacing-lg);
@@ -227,7 +235,6 @@ main {
 }
 
 .settings-toggle {
-    align-self: flex-start;
     background: linear-gradient(120deg, rgba(59, 130, 246, 0.2), rgba(124, 58, 237, 0.2));
     border: 1px solid rgba(56, 189, 248, 0.35);
     border-radius: var(--radius-sm);
@@ -237,6 +244,10 @@ main {
     padding: var(--spacing-xs) var(--spacing-md);
     cursor: pointer;
     transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.params-bar .settings-toggle {
+    margin-left: auto;
 }
 
 .settings-toggle:hover,
@@ -255,15 +266,12 @@ main {
     background: linear-gradient(120deg, rgba(236, 72, 153, 0.2), rgba(251, 191, 36, 0.2));
 }
 
-.controls-shell {
-    padding: 0;
-}
-
 .controls-container {
     display: none;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: var(--spacing-lg);
-    padding: var(--spacing-lg);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid rgba(148, 163, 184, 0.2);
 }
 
 .control-section {
@@ -401,6 +409,7 @@ main {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-lg);
+    width: 100%;
 }
 
 .musical-staff {
@@ -423,6 +432,7 @@ main {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-lg);
+    width: 100%;
 }
 
 .library-header h2 {
@@ -446,6 +456,7 @@ ul {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-md);
+    width: 100%;
 }
 
 #savedJinglesDisplay li {
@@ -455,8 +466,9 @@ ul {
 .saved-jingle-card {
     position: relative;
     display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-md);
     padding: var(--spacing-md);
     background: linear-gradient(135deg, rgba(248, 250, 252, 0.96), rgba(226, 232, 240, 0.9));
     border-radius: var(--radius-md);
@@ -486,6 +498,7 @@ ul {
     flex-wrap: wrap;
     gap: var(--spacing-sm);
     align-items: center;
+    margin-left: auto;
 }
 
 .jingle-action {
@@ -539,6 +552,7 @@ ul {
     flex-wrap: wrap;
     gap: var(--spacing-sm);
     align-items: center;
+    flex: 1 1 260px;
 }
 
 .note-select {
@@ -579,14 +593,16 @@ ul {
     .button-row {
         justify-content: center;
     }
+}
 
-    .app-grid {
-        grid-template-columns: 1fr;
+@media (max-width: 900px) {
+    .params-bar {
+        flex-direction: column;
+        align-items: stretch;
     }
 
-    .controls-column,
-    .stave-column {
-        display: contents;
+    .params-bar .settings-toggle {
+        width: 100%;
     }
 }
 
@@ -605,7 +621,7 @@ ul {
     }
 
     .controls-container {
-        padding: var(--spacing-md);
+        padding-top: var(--spacing-md);
     }
 
     .button-row {
@@ -615,6 +631,12 @@ ul {
     .styled-button {
         width: 100%;
         text-align: center;
+    }
+
+    .jingle-actions {
+        margin-left: 0;
+        width: 100%;
+        justify-content: flex-start;
     }
 }
 
