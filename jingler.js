@@ -305,11 +305,11 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 document.getElementById('generate').addEventListener('click', generateJingle);
-document.getElementById('timeSignature').addEventListener('input', function () {
+document.getElementById('timeSignature').addEventListener('change', function () {
     // e.g. 4/4 = 4 and 4, 3/4 = 3 and 4
     timeSignatureNotesPerMeasure = parseInt(this.value.split('/')[0]);
     timeSignatureNoteValue = parseInt(this.value.split('/')[1]);
-    totalTicksPerMeasure = ticksPerQuarterNote * timeSignatureNotesPerMeasure;
+    updateParameterDisplay();
 });
 document.getElementById('export-music-staff').addEventListener('click', function () {
     const svg = document.getElementById('musicalstaff').getElementsByTagName('svg')[0];
@@ -362,6 +362,7 @@ function updateParameterDisplay() {
     document.getElementById('notes-display').textContent = numNotesMax;
     document.getElementById('synth-display').textContent = document.getElementById('synthType').value;
     document.getElementById('osc-display').textContent = oscillatorType;
+    document.getElementById('timeSignature-display').textContent = getTimeSignature();
 }
 
 // Add event listeners to update display when controls change
@@ -421,8 +422,11 @@ document.getElementById('oscillatorType').addEventListener('change', function ()
 //#region Functions
 function generateJingle() {
 
-    createJingle();
-    savedJingles.push([...currentJingle]);
+    const activeTimeSignature = getCurrentTimeSignatureConfig();
+    createJingle(activeTimeSignature);
+    const newJingle = cloneJingle(currentJingle);
+    newJingle.timeSignature = { ...activeTimeSignature };
+    savedJingles.push(newJingle);
     displaySavedJingles();
     drawMusicalStaff(currentJingle);
     playJingle(currentJingle);
@@ -465,6 +469,11 @@ function displaySavedJingles() {
         const index = savedJingles.length - 1 - reverseIndex; // Calculate original index for deletion
         const listItem = document.createElement('li');
         listItem.className = 'saved-jingle-card';
+
+        const metadata = document.createElement('div');
+        metadata.className = 'saved-jingle-metadata';
+        metadata.textContent = `Time Signature: ${getTimeSignature(jingle)}`;
+        listItem.appendChild(metadata);
 
         const notesContainer = document.createElement('span');
         notesContainer.className = 'saved-jingle-notes';
@@ -535,11 +544,11 @@ function displaySavedJingles() {
     });
 }
 
-function createJingle() {
+function createJingle(timeSignatureConfig = getCurrentTimeSignatureConfig()) {
     const notes = selectedScale ? selectedScale.notes : [];
     let noteDuration = '';
     let ticksInCurrentJingle = 0;
-    let totalTicksPerMeasure = ticksPerQuarterNote * timeSignatureNotesPerMeasure;
+    let totalTicksPerMeasure = getTotalTicksPerMeasure(timeSignatureConfig);
     let numNotes = 0;
     let resting = false;
 
@@ -570,7 +579,7 @@ function createJingle() {
                 note = getMiddleNoteFrequency(selectedScale);
                 noteName = getMiddleNoteName(selectedScale);
                 // Get the array of rests that fit in the remaining measure
-                let restsForMeasure = calculateRestsForRemainingTicks(ticksInCurrentJingle);
+                let restsForMeasure = calculateRestsForRemainingTicks(ticksInCurrentJingle, totalTicksPerMeasure);
                 // Iterate over the array and push each rest to currentJingle
                 restsForMeasure.forEach(restDuration => {
                     currentJingle.push({
@@ -589,6 +598,8 @@ function createJingle() {
             }
         }
     }
+
+    currentJingle.timeSignature = { ...timeSignatureConfig };
 }
 
 function getTicksInCurrentJingle(currentJingleIndex) {
@@ -624,12 +635,15 @@ function drawMusicalStaff(jingle) {
     var score = vf.EasyScore();
     var system = vf.System();
     var jingleNotes = jingle.map(({ noteName, note, duration, resting, scale }) => convertNoteToVexFlowFormat(noteName, note, duration, resting, scale)).join(', ');
+    const timeSignature = jingle?.timeSignature ? jingle.timeSignature : getCurrentTimeSignatureConfig();
+    const staveTimeSignature = formatTimeSignature(timeSignature);
+    const keySignatureSource = jingle.length > 0 ? jingle[0].scale.name : selectedScale.name;
 
     system.addStave({
         voices: [
             score.voice(score.notes(jingleNotes, { stem: 'up' })),
         ]
-    }).addClef('treble').addTimeSignature(getTimeSignature()).addKeySignature(getKeySignature(jingle[0].scale.name));
+    }).addClef('treble').addTimeSignature(staveTimeSignature).addKeySignature(getKeySignature(keySignatureSource));
 
     vf.draw();
 }
@@ -660,8 +674,8 @@ function convertNoteToVexFlowFormat(noteValue, frequency, duration, resting, sca
 }
 
 // Function to calculate rests needed to fill remaining ticks
-function calculateRestsForRemainingTicks(usedTicks) {
-    let remainingTicks = 768 - usedTicks; // 768 ticks per measure in 4/4 time
+function calculateRestsForRemainingTicks(usedTicks, totalTicksPerMeasure) {
+    let remainingTicks = Math.max(0, totalTicksPerMeasure - usedTicks);
     let restsNeeded = [];
 
     // Iterate over each rest duration
@@ -675,8 +689,28 @@ function calculateRestsForRemainingTicks(usedTicks) {
     return restsNeeded;
 }
 
-function getTimeSignature() {
-    return `${timeSignatureNotesPerMeasure}/${timeSignatureNoteValue}`;
+function getCurrentTimeSignatureConfig() {
+    return {
+        beatsPerMeasure: timeSignatureNotesPerMeasure,
+        noteValue: timeSignatureNoteValue
+    };
+}
+
+function getTotalTicksPerMeasure(timeSignature = getCurrentTimeSignatureConfig()) {
+    const quarterNoteMultiplier = 4 / timeSignature.noteValue;
+    return ticksPerQuarterNote * timeSignature.beatsPerMeasure * quarterNoteMultiplier;
+}
+
+function formatTimeSignature(signature) {
+    return `${signature.beatsPerMeasure}/${signature.noteValue}`;
+}
+
+function getTimeSignature(jingle) {
+    if (jingle && jingle.timeSignature) {
+        return formatTimeSignature(jingle.timeSignature);
+    }
+
+    return formatTimeSignature(getCurrentTimeSignatureConfig());
 }
 
 function getMiddleNote(scale) {
@@ -696,6 +730,16 @@ function getMiddleNoteName(scale) {
     const middleNoteName = scale.notenames[scale.notes.indexOf(middleNote)];
 
     return middleNoteName;
+}
+
+function cloneJingle(jingle) {
+    const clone = jingle.map(note => ({ ...note }));
+
+    if (jingle.timeSignature) {
+        clone.timeSignature = { ...jingle.timeSignature };
+    }
+
+    return clone;
 }
 
 // use this to generate all the notes from the scales
