@@ -639,9 +639,12 @@ function drawMusicalStaff(jingle) {
     const staveTimeSignature = formatTimeSignature(timeSignature);
     const keySignatureSource = jingle.length > 0 ? jingle[0].scale.name : selectedScale.name;
 
+    const voiceOptions = { time: staveTimeSignature };
+    const voice = score.voice(score.notes(jingleNotes, { stem: 'up' }), voiceOptions);
+
     system.addStave({
         voices: [
-            score.voice(score.notes(jingleNotes, { stem: 'up' })),
+            voice,
         ]
     }).addClef('treble').addTimeSignature(staveTimeSignature).addKeySignature(getKeySignature(keySignatureSource));
 
