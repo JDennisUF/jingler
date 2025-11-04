@@ -528,13 +528,15 @@ ul {
 }
 
 .jingle-action.play {
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.35), rgba(124, 58, 237, 0.35));
-    border-color: rgba(56, 189, 248, 0.5);
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.82), rgba(124, 58, 237, 0.78));
+    border-color: rgba(56, 189, 248, 0.65);
+    color: rgba(15, 23, 42, 0.92);
 }
 
 .jingle-action.delete {
-    background: linear-gradient(135deg, rgba(236, 72, 153, 0.38), rgba(124, 58, 237, 0.32));
-    border-color: rgba(236, 72, 153, 0.45);
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.85), rgba(124, 58, 237, 0.75));
+    border-color: rgba(236, 72, 153, 0.6);
+    color: rgba(15, 23, 42, 0.92);
 }
 
 .jingle-action:hover,
