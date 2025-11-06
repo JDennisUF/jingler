@@ -271,7 +271,10 @@ const validOscillatorsBySynth = {
 
 const ticksPerQuarterNote = 192;
 const noteDurations = ["2", "4", "4", "8", "8", "16", "16"]; // Possible note durations, omitting whole notes (32nd notes are optional)
+const noteDurationTicks = noteDurations.map(duration => Tone.Time(`${duration}n`).toTicks());
+const minNoteDurationTicks = Math.min(...noteDurationTicks);
 const randomRestProbability = 0.15; // Chance to insert a spontaneous rest within a measure
+const minNotesPerJingle = 2; // Ensure each generated jingle has at least two sounding notes
 
 let selectedScale = scales[0];
 let currentJingle = [];
@@ -293,7 +296,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const toggleButton = document.getElementById('toggle-settings');
     if (toggleButton) {
         toggleButton.addEventListener('click', function () {
-            console.log('Toggle button clicked!'); // Debug log
             const controlsContainer = document.getElementById('controls-container');
 
             if (controlsContainer.style.display === 'none' || controlsContainer.style.display === '') {
@@ -553,88 +555,237 @@ function displaySavedJingles() {
 
 function createJingle(timeSignatureConfig = getCurrentTimeSignatureConfig()) {
     const notes = selectedScale ? selectedScale.notes : [];
-    let noteDuration = '';
-    let ticksInCurrentJingle = 0;
-    let totalTicksPerMeasure = getTotalTicksPerMeasure(timeSignatureConfig);
-    let numNotes = 0;
-    let resting = false;
+    const totalTicksPerMeasure = getTotalTicksPerMeasure(timeSignatureConfig);
+    const effectiveNotesMax = Math.max(numNotesMax, minNotesPerJingle);
+    const maxGenerationAttempts = 10;
 
-    currentJingle = [];
+    let attempt = 0;
+    let placedNotes = 0;
 
-    // get the amount of ticks left in the current measure
-    while (ticksInCurrentJingle < totalTicksPerMeasure) {
-        resting = false;
-        const remainingTicks = totalTicksPerMeasure - ticksInCurrentJingle;
+    do {
+        currentJingle = buildJingleAttempt({
+            notes,
+            totalTicksPerMeasure,
+            effectiveNotesMax
+        });
 
-        if (numNotes > 0 && Math.random() < randomRestProbability) {
-            const randomRestDuration = getRandomRestDuration(remainingTicks);
-            if (randomRestDuration) {
-                const restNote = getMiddleNoteFrequency(selectedScale);
-                const restNoteName = getMiddleNoteName(selectedScale);
-                currentJingle.push({
-                    note: restNote,
-                    duration: randomRestDuration,
-                    noteName: restNoteName,
-                    resting: true,
-                    scale: selectedScale
-                });
-                ticksInCurrentJingle += Tone.Time(randomRestDuration).toTicks();
-                continue;
+        placedNotes = countNonRestEvents(currentJingle);
+
+        if (placedNotes < minNotesPerJingle) {
+            const restPromoted = promoteFirstRestToNote(currentJingle, notes);
+            if (restPromoted) {
+                placedNotes = countNonRestEvents(currentJingle);
             }
         }
 
-        noteDuration = noteDurations[Math.floor(Math.random() * noteDurations.length)] + 'n';
-        let note = notes[Math.floor(Math.random() * notes.length)];
-        let noteName = selectedScale.notenames[notes.indexOf(note)];
-        // if this is the second note and the measure is already complete
-        // skip to the next note instead.  This avoids two half notes in one measure (boring)
-        if (numNotes === 1 &&
-            ticksInCurrentJingle + Tone.Time(noteDuration).toTicks() >= totalTicksPerMeasure) {
-            continue;
-        }
+        attempt++;
+    } while (placedNotes < minNotesPerJingle && attempt < maxGenerationAttempts);
 
-        const durationTicks = Tone.Time(noteDuration).toTicks();
-
-        // If the duration is too long to fit in the measure, remove the previous event and try again
-        if (durationTicks > remainingTicks) {
-            const removedEvent = currentJingle.pop();
-            if (removedEvent) {
-                ticksInCurrentJingle -= Tone.Time(removedEvent.duration).toTicks();
-                if (!removedEvent.resting) {
-                    numNotes--;
-                }
-            }
-            continue;
-        }
-
-        numNotes++;
-        resting = (numNotes > numNotesMax);
-        if (resting) {
-            note = getMiddleNoteFrequency(selectedScale);
-            noteName = getMiddleNoteName(selectedScale);
-            // Get the array of rests that fit in the remaining measure
-            let restsForMeasure = calculateRestsForRemainingTicks(ticksInCurrentJingle, totalTicksPerMeasure);
-            // Iterate over the array and push each rest to currentJingle
-            restsForMeasure.forEach(restDuration => {
-                currentJingle.push({
-                    note: note,
-                    duration: restDuration,
-                    noteName: noteName,
-                    resting: true,
-                    scale: selectedScale
-                });
-                ticksInCurrentJingle += Tone.Time(restDuration).toTicks();
-            });
-        }
-        else {
-            currentJingle.push({ note, duration: noteDuration, noteName, resting, scale: selectedScale });
-            ticksInCurrentJingle += durationTicks;
-        }
+    if (placedNotes < minNotesPerJingle) {
+        addFallbackNotes(currentJingle, notes, totalTicksPerMeasure);
     }
+
+    const finalTicksUsed = getTotalTicksUsed(currentJingle);
+    fillMeasureWithRests(currentJingle, finalTicksUsed, totalTicksPerMeasure);
 
     currentJingle.timeSignature = { ...timeSignatureConfig };
 }
 
+function buildJingleAttempt({ notes, totalTicksPerMeasure, effectiveNotesMax }) {
+    const events = [];
+    let ticksInCurrentJingle = 0;
+    let numNotes = 0;
+
+    while (ticksInCurrentJingle < totalTicksPerMeasure) {
+        const remainingTicks = totalTicksPerMeasure - ticksInCurrentJingle;
+
+        if (shouldInsertRandomRest(numNotes)) {
+            const restTicks = addRandomRestEvent(events, remainingTicks);
+            if (restTicks > 0) {
+                ticksInCurrentJingle += restTicks;
+                continue;
+            }
+        }
+
+        const selection = selectNoteDuration(numNotes, remainingTicks);
+        if (!selection) {
+            break;
+        }
+
+        const { duration, ticks } = selection;
+
+        if (numNotes === 1 && ticksInCurrentJingle + ticks >= totalTicksPerMeasure) {
+            continue;
+        }
+
+        if (ticks > remainingTicks) {
+            const removedEvent = removeLastEvent(events);
+            if (!removedEvent) {
+                break;
+            }
+            ticksInCurrentJingle -= Tone.Time(removedEvent.duration).toTicks();
+            if (!removedEvent.resting) {
+                numNotes--;
+            }
+            continue;
+        }
+
+        const { note, noteName } = pickRandomNote(notes);
+        events.push(createNoteEvent(note, `${duration}n`, noteName));
+        ticksInCurrentJingle += ticks;
+        numNotes++;
+
+        if (numNotes > effectiveNotesMax) {
+            ticksInCurrentJingle += fillMeasureWithRests(events, ticksInCurrentJingle, totalTicksPerMeasure);
+        }
+    }
+
+    return events;
+}
+
+function shouldInsertRandomRest(numNotes) {
+    return numNotes >= minNotesPerJingle && Math.random() < randomRestProbability;
+}
+
+function addRandomRestEvent(events, remainingTicks) {
+    const restDuration = getRandomRestDuration(remainingTicks);
+    if (!restDuration) {
+        return 0;
+    }
+
+    const restNote = getMiddleNoteFrequency(selectedScale);
+    const restNoteName = getMiddleNoteName(selectedScale);
+    events.push(createRestEvent(restNote, restDuration, restNoteName));
+    return Tone.Time(restDuration).toTicks();
+}
+
+function selectNoteDuration(numNotes, remainingTicks) {
+    const options = noteDurations.map((duration, index) => ({
+        duration,
+        ticks: noteDurationTicks[index]
+    }));
+
+    const notesNeededAfterThis = Math.max(0, minNotesPerJingle - (numNotes + 1));
+    const minSpaceForNeededNotes = notesNeededAfterThis * minNoteDurationTicks;
+
+    const viable = options.filter(({ ticks }) => ticks <= remainingTicks && (remainingTicks - ticks) >= minSpaceForNeededNotes);
+    if (viable.length) {
+        return pickRandomItem(viable);
+    }
+
+    const fitsRemaining = options.filter(({ ticks }) => ticks <= remainingTicks);
+    if (fitsRemaining.length) {
+        return pickRandomItem(fitsRemaining);
+    }
+
+    return options.length ? pickRandomItem(options) : null;
+}
+
+function removeLastEvent(events) {
+    if (!events.length) {
+        return null;
+    }
+    return events.pop();
+}
+
+function fillMeasureWithRests(events, usedTicks, totalTicksPerMeasure) {
+    const restsForMeasure = calculateRestsForRemainingTicks(usedTicks, totalTicksPerMeasure);
+    if (!restsForMeasure.length) {
+        return 0;
+    }
+
+    const restNote = getMiddleNoteFrequency(selectedScale);
+    const restNoteName = getMiddleNoteName(selectedScale);
+    let ticksAdded = 0;
+
+    restsForMeasure.forEach(restDuration => {
+        events.push(createRestEvent(restNote, restDuration, restNoteName));
+        ticksAdded += Tone.Time(restDuration).toTicks();
+    });
+
+    return ticksAdded;
+}
+
+function createNoteEvent(note, duration, noteName) {
+    return {
+        note,
+        duration,
+        noteName,
+        resting: false,
+        scale: selectedScale
+    };
+}
+
+function createRestEvent(note, duration, noteName) {
+    return {
+        note,
+        duration,
+        noteName,
+        resting: true,
+        scale: selectedScale
+    };
+}
+
+function pickRandomNote(notes) {
+    const note = notes[Math.floor(Math.random() * notes.length)];
+    const noteName = selectedScale.notenames[notes.indexOf(note)];
+    return { note, noteName };
+}
+
+function pickRandomItem(items) {
+    return items[Math.floor(Math.random() * items.length)];
+}
+
+function countNonRestEvents(events) {
+    return events.filter(event => !event.resting).length;
+}
+
+function promoteFirstRestToNote(events, notes) {
+    const restIndex = events.findIndex(event => event.resting);
+    if (restIndex === -1) {
+        return false;
+    }
+
+    const { note, noteName } = pickRandomNote(notes);
+    const restEvent = events[restIndex];
+    events[restIndex] = createNoteEvent(note, restEvent.duration, noteName);
+    return true;
+}
+
+function addFallbackNotes(events, notes, totalTicksPerMeasure) {
+    let ticksUsed = getTotalTicksUsed(events);
+
+    while (countNonRestEvents(events) < minNotesPerJingle) {
+        const remainingTicks = totalTicksPerMeasure - ticksUsed;
+        const option = getShortestDurationOption(remainingTicks);
+        if (!option) {
+            break;
+        }
+
+        const { note, noteName } = pickRandomNote(notes);
+        events.push(createNoteEvent(note, `${option.duration}n`, noteName));
+        ticksUsed += option.ticks;
+    }
+}
+
+function getTotalTicksUsed(events) {
+    return events.reduce((total, event) => total + Tone.Time(event.duration).toTicks(), 0);
+}
+
+function getShortestDurationOption(remainingTicks) {
+    let bestOption = null;
+
+    noteDurations.forEach((duration, index) => {
+        const ticks = noteDurationTicks[index];
+        if (ticks <= remainingTicks) {
+            if (!bestOption || ticks < bestOption.ticks) {
+                bestOption = { duration, ticks };
+            }
+        }
+    });
+
+    return bestOption;
+}
 function getTicksInCurrentJingle(currentJingleIndex) {
     // loop through currentJingle up to the currentJingleIndex
     // summing up the ticks of each note
